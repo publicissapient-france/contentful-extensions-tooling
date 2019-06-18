@@ -1,7 +1,7 @@
 version: 2
 
 jobs:
-  "Package Serverless - Contentful extensions bucket"
+  "Package Serverless - Contentful extensions bucket":
     docker:
       # Image built from the Dockerfile in the current repository
       - image: xebiafrance/contentful-extensions-build-container:v1
@@ -18,7 +18,7 @@ jobs:
             - package-prod
             - serverless.yml
 
-  "Deploy - Contentful extensions bucket"
+  "Deploy - Contentful extensions bucket":
     docker:
       # Image built from the Dockerfile in the current repository
       - image: xebiafrance/contentful-extensions-build-container:v1
@@ -35,7 +35,7 @@ workflows:
   full:
     jobs:
       - "Package Serverless - Contentful extensions bucket"
-      - "Deploy - Contentful extensions bucket"
+      - "Deploy - Contentful extensions bucket":
           context: "Contentful Extensions - AWS Deployment"
           requires:
             - "Package Serverless - Contentful extensions bucket"
