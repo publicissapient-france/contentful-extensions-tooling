@@ -1,0 +1,42 @@
+version: 2
+
+jobs:
+  "Package Serverless - Contentful extensions bucket"
+    docker:
+      # Image built from the Dockerfile in the current repository
+      - image: xebiafrance/contentful-extensions-build-container:v1
+    steps:
+      - checkout
+      - run:
+          name: Create Serverless packages
+          command: |
+            serverless package -p package-prod -s prod
+      - persist_to_workspace:
+          root: .
+          paths:
+            - build
+            - package-prod
+            - serverless.yml
+
+  "Deploy - Contentful extensions bucket"
+    docker:
+      # Image built from the Dockerfile in the current repository
+      - image: xebiafrance/contentful-extensions-build-container:v1
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          name: Deploy to AWS S3
+          command: |
+            serverless deploy --force -p package-prod -s prod
+
+workflows:
+  version: 2
+  full:
+    jobs:
+      - "Package Serverless - Contentful extensions bucket"
+      - "Deploy - Contentful extensions bucket"
+          context: "Contentful Extensions - AWS Deployment"
+          requires:
+            - "Package Serverless - Contentful extensions bucket"
+
